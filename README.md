@@ -1,4 +1,5 @@
 # orgonemedia.nl
+This is the source code of my company website https://orgonemedia.nl which is built with Vue and uses the Unsplash API to serve a random image in the background. This is my playground, feel free to use parts of the code for your own good use.
 
 ## Project setup
 ```
