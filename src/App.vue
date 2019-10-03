@@ -39,7 +39,7 @@
           <a href="https://unsplash.com/?utm_source=Orgone&utm_medium=referral" target="blank">Unsplash</a>
         </div>
       </transition>
-      <div class="c-credit__icon" @click="showCredit"><img src="./assets/icons/info.svg"></div>
+      <div class="c-credit__icon" @click="showCredit"><img src="./assets/icons/info.svg" alt="Info"></div>
     </div>
     <visualizer v-if="audioPlaying" :audio-playing="audioPlaying" @bassFreq="pumpBase" />
     <transition appear name="menu-content">
@@ -141,7 +141,7 @@ export default {
   },
   watch: { 
     hasTouch: function(newVal, oldVal) {
-      console.log('newVal:', newVal)
+      console.log('hasTouch:', newVal)
     },      
   },
   created () {
@@ -149,6 +149,7 @@ export default {
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
     // Refresh all open app tabs when a new service worker is installed.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('swUpdated:', navigator.serviceWorker)
       if (this.refreshing) return;
       this.refreshing = true;
       window.location.reload();
@@ -156,17 +157,6 @@ export default {
   },
   mounted () {
     const vm = this;
-    // initsetTimeout
-(
-    function()
-    {
-        if ( !image.complete || !image.naturalWidth )
-        {
-            image.src = "http://mirror.site.com/err.png";
-        }
-    },
-    1000
-);
     this.getImage()
     this.detectTouch()
     window.addEventListener( 'resize', this.onWindowResize, false )

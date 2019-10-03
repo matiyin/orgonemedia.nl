@@ -1,5 +1,19 @@
+const CompressionPlugin = require('compression-webpack-plugin');
+
 module.exports = {
-pwa: {
+  // pluginOptions: {
+  //   webpackBundleAnalyzer: {
+  //     openAnalyzer: true
+  //   }
+  // },
+  configureWebpack: {
+    plugins: [
+      new CompressionPlugin({
+        test: /\.(js|css|html|svg)$/,
+      })
+    ]
+  },
+  pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       swSrc: 'src/service-worker.js',

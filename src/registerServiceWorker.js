@@ -22,6 +22,7 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated(registration) {
+      console.log('SW UPDATED');
       // Add a custom event and dispatch it.
       // Used to display of a 'refresh' banner following a service worker update.
       // Set the event payload to the service worker registration object.

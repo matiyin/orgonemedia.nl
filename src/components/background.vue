@@ -5,7 +5,7 @@
       <div ref="imageDiv2" class="c-background-image c-background-image__second" :style="{ 'background-image': 'url(' + getImage2 + ')' }" />
     </div>
     <transition name="fade-bg">
-      <mandala v-if="showMandala" :source="getCurrentImage" :showUI="showUI" />
+      <mandala v-if="showMandala" :source="getCurrentImage" :show-ui="showUI" />
     </transition>
   </div>
 </template>

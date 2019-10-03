@@ -1,7 +1,8 @@
 {
-  "name": "Orgonemedia.nl",
+  "name": "OrgoneMedia",
   "short_name": "OrgoneMedia",
-  "icons": [{
+  "icons": [
+    {
       "src": "./images/favicons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
@@ -12,8 +13,9 @@
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "index.html?source=pwa",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#EC008C"
+  "theme_color": "#000000"
 }

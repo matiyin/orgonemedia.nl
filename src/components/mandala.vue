@@ -3,7 +3,7 @@
     <svg id="mandala" :class="{'is-changing' : isChanging}" />
     <incrementer v-show="showUI" :value="currentSides" :step="10" :min="10" :max="50" @increment="onIncrement" />
   </div>
-  </template>
+</template>
 <script>
 import Incrementer from "@/components/Incrementer";
 export default {
