@@ -1,7 +1,7 @@
 <template>
   <div v-if="source" ref="container" class="c-mandala">
     <svg id="mandala" :class="{'is-changing' : isChanging}" />
-    <incrementer v-show="showUI" :value="currentSides" :step="10" :min="10" :max="50" @increment="onIncrement" />
+    <incrementer v-show="showUI" :value="currentSides" :step="10" :min="10" :max="50" @increment="onIncrement" @onMandalaRefresh="onMandalaRefresh" />
   </div>
 </template>
 <script>
@@ -82,6 +82,12 @@ export default {
       this.isChanging = true
       this.mandala.clear()
       this.draw()
+    },
+    onMandalaRefresh () {
+      this.isChanging = true
+      setTimeout(() => {
+        this.isChanging = false
+      }, 2000);
     },
     onWindowResize () {
       this.redraw()

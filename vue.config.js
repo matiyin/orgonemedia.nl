@@ -1,11 +1,11 @@
 const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
-  // pluginOptions: {
-  //   webpackBundleAnalyzer: {
-  //     openAnalyzer: true
-  //   }
-  // },
+  pluginOptions: {
+    webpackBundleAnalyzer: {
+      openAnalyzer: false
+    }
+  },
   configureWebpack: {
     plugins: [
       new CompressionPlugin({
@@ -22,7 +22,7 @@ module.exports = {
         /manifest\.json$/
       ],
     },
-    themeColor: '#EC008C'
+    themeColor: '#000000'
   },
   devServer: {
     port: 3000,

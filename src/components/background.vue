@@ -85,9 +85,6 @@ export default {
         this.currentImage = src;
       }
     },
-    // getCurrentImage () {
-    //   return this.image
-    // },
   },
   watch: { 
     nextImage: function(newVal, oldVal) {
@@ -102,7 +99,7 @@ export default {
       this.getCurrentImage = newVal
     },
     showMandala: function(newVal, oldVal) {
-      this.getCurrentImage = this.image
+      if (!this.getCurrentImage) this.getCurrentImage = this.image
       if (newVal) {
         this.stopParallax()
       } else {

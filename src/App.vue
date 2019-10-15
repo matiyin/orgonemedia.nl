@@ -1,10 +1,17 @@
 <template>
-  <div class="c-page" :class="{'has-touch': hasTouch}" v-hammer:swipe="touchUI">
+  <div v-hammer:swipe="touchUI" class="c-page" :class="{'has-touch': hasTouch}">
     <transition name="fade-bg">
       <page-loader v-show="!imagesLoaded" />
     </transition>
     <transition name="fade-bg">
-      <background v-show="!loading && imagesLoaded" :image="splashSrc" :show-mandala="showMandala" :next-image="splashNext" :is-activated="isActivated" />
+      <background
+        v-show="!loading && imagesLoaded"
+        :image="splashSrc"
+        :show-mandala="showMandala"
+        :next-image="splashNext"
+        :is-activated="isActivated"
+        @onMandalaRefresh="onMandalaRefresh"
+      />
     </transition>
     <!-- <transition name="fade-bg">
       <div v-show="showPattern" class="c-pattern" :style="{ 'background-image': 'url(' + getPattern + ')' }" />
@@ -57,9 +64,25 @@
       <no-cookie v-show="showNoCookie" @click="closeNoCookie" />
     </transition>
     <transition name="credits">
-      <button v-show="pwa.updateExists" class="c-refresh-pwa" @click="refreshApp">
-        New version available! Click to update
-        <svg width="640" height="640" viewBox="0 0 640 640"><path fill="#fff" d="M320 96v64c-0.085 0-0.186 0-0.286 0-88.366 0-160 71.634-160 160 0 44.254 17.966 84.312 47.003 113.277l0.003 0.003-45.12 45.12c-40.541-40.537-65.616-96.54-65.616-158.4 0-123.712 100.288-224 224-224 0.006 0 0.011 0 0.017 0h-0.001zM478.4 161.6c40.541 40.537 65.616 96.54 65.616 158.4 0 123.712-100.288 224-224 224-0.006 0-0.011 0-0.017 0h0.001v-64c0.085 0 0.186 0 0.286 0 88.366 0 160-71.634 160-160 0-44.254-17.966-84.312-47.003-113.277l-0.003-0.003 45.12-45.12zM320 640l-128-128 128-128v256zM320 256v-256l128 128-128 128z" /></svg>  
+      <button v-if="pwa.updateExists" class="c-refresh-pwa c-notification">
+        <p @click="refreshApp">New version available!<span>Click to update</span></p>
+        <div class="c-notification__icon" @click="refreshApp">
+          <svg width="640" height="640" viewBox="0 0 640 640"><path fill="#fff" d="M320 96v64c-0.085 0-0.186 0-0.286 0-88.366 0-160 71.634-160 160 0 44.254 17.966 84.312 47.003 113.277l0.003 0.003-45.12 45.12c-40.541-40.537-65.616-96.54-65.616-158.4 0-123.712 100.288-224 224-224 0.006 0 0.011 0 0.017 0h-0.001zM478.4 161.6c40.541 40.537 65.616 96.54 65.616 158.4 0 123.712-100.288 224-224 224-0.006 0-0.011 0-0.017 0h0.001v-64c0.085 0 0.186 0 0.286 0 88.366 0 160-71.634 160-160 0-44.254-17.966-84.312-47.003-113.277l-0.003-0.003 45.12-45.12zM320 640l-128-128 128-128v256zM320 256v-256l128 128-128 128z" /></svg>  
+        </div>
+        <div class="c-notification__close" @click="closeNotification">
+          <svg width="512" height="512" viewBox="0 0 512 512"><path fill="#fff" d="M446.627 110.627l-45.254-45.254-145.373 145.372-145.373-145.372-45.254 45.253 145.373 145.374-145.373 145.373 45.254 45.254 145.373-145.373 145.373 145.373 45.254-45.255-145.372-145.372z" /></svg>
+        </div>
+      </button>
+    </transition>
+    <transition name="credits">
+      <button v-if="pwa.showAddtoHome" class="c-add-to-home c-notification">
+        <p @click="addToHomeScreen">Install web app (Add to Home)</p>
+        <div class="c-notification__icon" @click="addToHomeScreen">
+          <svg width="640" height="640" viewBox="0 0 640 640"><path fill="#fff" d="M64 64c0-35.2 28.8-64 64-64h384c35.346 0 64 28.654 64 64v0 576l-256-128-256 128v-576zM128 64v480l192-96 192 96v-480h-384zM288 224v-64h64v64h64v64h-64v64h-64v-64h-64v-64h64z" /></svg>
+        </div>
+        <div class="c-notification__close" @click="closeNotification">
+          <svg width="512" height="512" viewBox="0 0 512 512"><path fill="#fff" d="M446.627 110.627l-45.254-45.254-145.373 145.372-145.373-145.372-45.254 45.253 145.373 145.374-145.373 145.373 45.254 45.254 145.373-145.373 145.373 145.373 45.254-45.255-145.372-145.372z" /></svg>
+        </div>
       </button>
     </transition>
   </div>
@@ -122,6 +145,8 @@ export default {
         refreshing: false,
         registration: null,
         updateExists: false,
+        showAddtoHome: false,
+        deferredPrompt: null,
       },
     };
   },
@@ -145,14 +170,23 @@ export default {
     },      
   },
   created () {
+    const vm = this;
     // Listen for swUpdated event and display refresh snackbar as required.
-    document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
+    document.addEventListener('swUpdated', vm.showRefreshUI, { once: true });
     // Refresh all open app tabs when a new service worker is installed.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       console.log('swUpdated:', navigator.serviceWorker)
-      if (this.refreshing) return;
-      this.refreshing = true;
-      window.location.reload();
+      if (vm.refreshing) return
+      vm.refreshing = true
+      window.location.reload()
+    });
+    // show Add to Home PWA popup
+    window.addEventListener('beforeinstallprompt', function (e) {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault()
+      // Stash the event so it can be triggered later.
+      vm.pwa.deferredPrompt = e
+     vm.toggleAddToHome()
     });
   },
   mounted () {
@@ -450,11 +484,13 @@ export default {
     closeMandala () {
       this.showMandala = false
     },
+    onMandalaRefresh () {
+      this.getImage()
+    },
     resetMenuItems () {
       const menuItems = document.querySelectorAll('.is-menu-active');
       if (menuItems.length) {
         Array.from(menuItems).forEach( el => {
-          console.log('el:', el)
           el.removeAttribute('class')
         });
       }
@@ -487,6 +523,25 @@ export default {
       this.pwa.updateExists = false;
       if (!this.pwa.registration || !this.pwa.registration.waiting) { return; }
       this.pwa.registration.waiting.postMessage('skipWaiting');
+    },
+    toggleAddToHome () {
+      this.pwa.showAddtoHome = !this.pwa.showAddtoHome
+    },
+    addToHomeScreen () {
+      this.toggleAddToHome()
+      this.pwa.deferredPrompt.prompt()  // Wait for the user to respond to the prompt
+      this.pwa.deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        this.pwa.deferredPrompt = null
+      });
+    },
+    closeNotification () {
+      this.pwa.updateExists = false
+      this.pwa.showAddtoHome = false
     },
     // activate menu on touch, except when menu content is open
     touchUI (e) {
