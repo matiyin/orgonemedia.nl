@@ -332,7 +332,6 @@ export default {
         // .get('https://api.unsplash.com/photos/random/?client_id='+this.splashID)
         .get('https://api.unsplash.com/photos/random/?query=nature&orientation=landscape&client_id='+this.splashID)
         .then(response => {
-          this.hasError = true
           if (this.splashSrc) {
             // replace image
             const img = new Image()
@@ -340,8 +339,11 @@ export default {
             setTimeout(() => {
               if ( !img.complete || !img.naturalWidth ) {
                 this.handleLoadError('ERROR: image took too long to load...')
+              } else {
+                this.errored = false
+                this.hasError = false
               }
-            }, 3000);
+            }, 5000);
             img.onload = this.handleLoad
             img.onerror = this.handleError
             this.splashNext = img.src
