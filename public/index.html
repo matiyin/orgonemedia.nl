@@ -29,9 +29,61 @@
     <meta name="msapplication-navbutton-color" content="#EC008C">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="msapplication-starturl" content="./index.html">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .c-loader {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .c-loader .c-loader__wrapper {
+        font-size: 12px;
+        position: relative;
+        font-family: Monospace;
+        white-space: pre;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      .c-loader .c-loader__wrapper div::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #EC008C;
+        mix-blend-mode: lighten;
+        transform: translateX(-100%);
+        animation: loader 4s infinite;
+      }
+      .c-loader .c-loader__wrapper div {
+        position: relative;
+        background-color: white;
+      }
+      @keyframes loader {
+        100% {
+          transform: translateX(0);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div class="c-loader">
+        <div class="c-loader__wrapper">
+          <div> _____                     _____       _ _     
+|     |___ ___ ___ ___ ___|     |___ _| |_|___ 
+|  |  |  _| . | . |   | -_| | | | -_| . | | .'|
+|_____|_| |_  |___|_|_|___|_|_|_|___|___|_|__,|
+        |___|</div>
+        </div>
+    </div>
     <!-- built files will be auto injected -->
   </body>
 </html>

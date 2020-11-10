@@ -11,6 +11,7 @@
         :next-image="splashNext"
         :is-activated="isActivated"
         @onMandalaRefresh="onMandalaRefresh"
+        @close="showMandala=false"
       />
     </transition>
     <!-- <transition name="fade-bg">
@@ -76,7 +77,7 @@
     </transition>
     <transition name="credits">
       <button v-if="pwa.showAddtoHome" class="c-add-to-home c-notification">
-        <p @click="addToHomeScreen">Install web app (Add to Home)</p>
+        <p @click="addToHomeScreen">Install web app</p>
         <div class="c-notification__icon" @click="addToHomeScreen">
           <svg width="640" height="640" viewBox="0 0 640 640"><path fill="#fff" d="M64 64c0-35.2 28.8-64 64-64h384c35.346 0 64 28.654 64 64v0 576l-256-128-256 128v-576zM128 64v480l192-96 192 96v-480h-384zM288 224v-64h64v64h64v64h-64v64h-64v-64h-64v-64h64z" /></svg>
         </div>
@@ -116,6 +117,7 @@ export default {
       splashNext: null,
       splashCredit: null,
       isActivated: false,
+      isHovering: false,
       creditShown: false,
       audioPlaying: false,
       showMandala: false,
@@ -148,6 +150,7 @@ export default {
         showAddtoHome: false,
         deferredPrompt: null,
       },
+      inactiveTimer: null,
     };
   },
   computed: {
@@ -300,26 +303,46 @@ export default {
     // logo hover
     vm.svg.logo.mouseover(function() {
       if (!vm.isActivated && !this.hasTouch && window.innerWidth > 1024) {
-        window.Snap.animate(220,0, function( value ){
+        vm.isHovering = true
+        window.Snap.animate(220,0, ( value ) => {
           vm.svg.logoStroke.attr({ 'strokeDashoffset': value, 'strokeWidth': 0.5 })
-        }, 1000 );
+        }, 500 );
       }
     }).mouseout(function() {
       if (!vm.isActivated && !this.hasTouch && window.innerWidth > 1024) {
-        window.Snap.animate(0,220, function( value ){
+        window.Snap.animate(0,220, ( value ) => {
           vm.svg.logoStroke.attr({ 'strokeDashoffset': value, 'strokeWidth': 0.5 })
-        }, 1000 );
+        }, 500 );
+        vm.isHovering = false
       }
     });
 
     setTimeout(() => {
       // animate logo start (mask)
-      window.Snap.animate(72,0, function( value ){
+      window.Snap.animate(72,0, ( value ) => {
         gl_rect.transform( `t${value},t${value}`);
       }, 3000, () => { this.showNoCookie = false } );   
+      this.inactiveTimer = setInterval(() => {
+        this.animateInactive ()
+      }, 8000)
     }, 3000);
+
   },
   methods: {
+    animateInactive () {
+      if (!this.isActivated && !this.isHovering) {
+        window.Snap.animate(220,0, ( value ) => {
+          this.svg.logoStroke.attr({ 'strokeDashoffset': value, 'strokeWidth': 2 })
+        }, 500, mina.easeout() );
+        setTimeout(() => {
+          if (!this.isHovering) {
+            window.Snap.animate(0,220, ( value ) => {
+              this.svg.logoStroke.attr({ 'strokeDashoffset': value, 'strokeWidth': 1 })
+            }, 300 );
+          }
+        }, 3000);
+      }
+    },
     detectTouch () {
       window.addEventListener('touchstart', function onFirstTouch() {
         document.body.classList.add('user-is-touching');
@@ -338,12 +361,12 @@ export default {
             img.src = response.data.urls.raw + "&w=1800"
             setTimeout(() => {
               if ( !img.complete || !img.naturalWidth ) {
-                this.handleLoadError('ERROR: image took too long to load...')
+                this.handleLoadError('ERROR: Unsplash image took too long to load...')
               } else {
                 this.errored = false
                 this.hasError = false
               }
-            }, 5000);
+            }, 10000);
             img.onload = this.handleLoad
             img.onerror = this.handleError
             this.splashNext = img.src
@@ -358,9 +381,9 @@ export default {
             img.src = response.data.urls.raw + "&w=1800"
             setTimeout(() => {
               if ( !img.complete || !img.naturalWidth ) {
-                this.handleLoadError('ERROR: image took too long to load...')
+                this.handleLoadError('ERROR: Unsplash image took too long to load...')
               }
-            }, 3000);
+            }, 10000);
             img.onload = this.handleLoad
             img.onerror = this.handleError
             this.splashSrc = img.src
@@ -379,6 +402,7 @@ export default {
     // animate logo
     activate () {
       const vm = this;
+      clearInterval(this.inactiveTimer)
       if (this.isActivated) {
         this.isActivated = false;
         // close

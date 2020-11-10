@@ -5,16 +5,28 @@
       <div ref="imageDiv2" class="c-background-image c-background-image__second" :style="{ 'background-image': 'url(' + getImage2 + ')' }" />
     </div>
     <transition name="fade-bg">
-      <mandala v-if="showMandala" :source="getCurrentImage" :show-ui="showUI" />
+      <mandala v-if="showMandala" :source="getCurrentImage" :sides="mandalaSides" />
     </transition>
+    <incrementer
+      v-if="showMandala"
+      :value="mandalaSides"
+      :step="5"
+      :min="5"
+      :max="20"
+      @increment="onIncrement"
+      @close="closeMandala"
+    />
   </div>
 </template>
 
 <script>
 import mandala from "@/components/mandala";
+import Incrementer from "@/components/Incrementer";
+
 export default {
   components: {
     mandala,
+    Incrementer,
   },
   props: {
     showMandala: {
@@ -43,7 +55,7 @@ export default {
       currentImage: this.image,
       lFollowX: 0,
       lFollowY: 0,
-      showUI: true,
+      mandalaSides: 10,
     }
   },
   computed: {
@@ -154,6 +166,12 @@ export default {
       this.lFollowX = (20 * lMouseX) / 100
       this.lFollowY = (10 * lMouseY) / 100
     },
+    closeMandala () {
+      this.$emit('close')
+    },
+    onIncrement (value) {
+      this.mandalaSides = value
+    }
   }
 }
 </script>

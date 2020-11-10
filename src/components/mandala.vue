@@ -1,15 +1,10 @@
 <template>
   <div v-if="source" ref="container" class="c-mandala">
     <svg id="mandala" :class="{'is-changing' : isChanging}" />
-    <incrementer v-show="showUI" :value="currentSides" :step="10" :min="10" :max="50" @increment="onIncrement" @onMandalaRefresh="onMandalaRefresh" />
   </div>
 </template>
 <script>
-import Incrementer from "@/components/Incrementer";
 export default {
-  components: {
-    Incrementer,
-  },
   props: {
     source: {
       type: String,
@@ -18,11 +13,7 @@ export default {
     },
     sides: {
       type: Number,
-      default: () => 20
-    },
-    showUI: {
-      type: Boolean,
-      default: () => true
+      default: () => 10
     },
   },
   data () {
@@ -43,6 +34,12 @@ export default {
       this.$nextTick( () => {
         this.redraw()
       })
+    },
+    sides: function(newVal, oldVal) {
+      this.currentSides = newVal
+      this.$nextTick( () => {
+        this.redraw()
+      })
     }
   },
   mounted () {
@@ -50,10 +47,10 @@ export default {
     window.onresize = this.onWindowResize
   },
   methods: {
-    onIncrement (value) {
-      this.currentSides = value
-      this.redraw()
-    },
+    // onIncrement (value) {
+    //   this.currentSides = value
+    //   this.redraw()
+    // },
     draw () {
       const radius = window.innerWidth/2
       const angle = 360/this.currentSides/2
@@ -83,14 +80,17 @@ export default {
       this.mandala.clear()
       this.draw()
     },
-    onMandalaRefresh () {
-      this.isChanging = true
-      setTimeout(() => {
-        this.isChanging = false
-      }, 2000);
-    },
+    // onMandalaRefresh () {
+    //   this.isChanging = true
+    //   setTimeout(() => {
+    //     this.isChanging = false
+    //   }, 2000);
+    // },
     onWindowResize () {
       this.redraw()
+    },
+    closeMandala () {
+      this.$emit('close')
     }
   }
 }
