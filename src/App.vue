@@ -60,12 +60,12 @@
         </div>
       </div>
     </transition>
-    <div v-show="errored" class="c-error">error connecting to the Unsplash API...no worries, using a fallback image</div>
+    <div v-show="errored" class="c-error">Unsplash API unavailable, using a fallback image</div>
     <transition appear name="no-cookie">
-      <no-cookie v-show="showNoCookie" @click="closeNoCookie" />
+      <no-cookie v-show="showNoCookie" @close="closeNoCookie" />
     </transition>
     <transition name="credits">
-      <button v-if="pwa.updateExists" class="c-refresh-pwa c-notification">
+      <div v-if="pwa.updateExists" class="c-refresh-pwa c-notification">
         <p @click="refreshApp">New version available!<span>Click to update</span></p>
         <div class="c-notification__icon" @click="refreshApp">
           <svg width="640" height="640" viewBox="0 0 640 640"><path fill="#fff" d="M320 96v64c-0.085 0-0.186 0-0.286 0-88.366 0-160 71.634-160 160 0 44.254 17.966 84.312 47.003 113.277l0.003 0.003-45.12 45.12c-40.541-40.537-65.616-96.54-65.616-158.4 0-123.712 100.288-224 224-224 0.006 0 0.011 0 0.017 0h-0.001zM478.4 161.6c40.541 40.537 65.616 96.54 65.616 158.4 0 123.712-100.288 224-224 224-0.006 0-0.011 0-0.017 0h0.001v-64c0.085 0 0.186 0 0.286 0 88.366 0 160-71.634 160-160 0-44.254-17.966-84.312-47.003-113.277l-0.003-0.003 45.12-45.12zM320 640l-128-128 128-128v256zM320 256v-256l128 128-128 128z" /></svg>  
@@ -73,10 +73,10 @@
         <div class="c-notification__close" @click="closeNotification">
           <svg width="512" height="512" viewBox="0 0 512 512"><path fill="#fff" d="M446.627 110.627l-45.254-45.254-145.373 145.372-145.373-145.372-45.254 45.253 145.373 145.374-145.373 145.373 45.254 45.254 145.373-145.373 145.373 145.373 45.254-45.255-145.372-145.372z" /></svg>
         </div>
-      </button>
+      </div>
     </transition>
     <transition name="credits">
-      <button v-if="pwa.showAddtoHome" class="c-add-to-home c-notification">
+      <div v-if="pwa.showAddtoHome" class="c-add-to-home c-notification">
         <p @click="addToHomeScreen">Install web app</p>
         <div class="c-notification__icon" @click="addToHomeScreen">
           <svg width="640" height="640" viewBox="0 0 640 640"><path fill="#fff" d="M64 64c0-35.2 28.8-64 64-64h384c35.346 0 64 28.654 64 64v0 576l-256-128-256 128v-576zM128 64v480l192-96 192 96v-480h-384zM288 224v-64h64v64h64v64h-64v64h-64v-64h-64v-64h64z" /></svg>
@@ -84,7 +84,7 @@
         <div class="c-notification__close" @click="closeNotification">
           <svg width="512" height="512" viewBox="0 0 512 512"><path fill="#fff" d="M446.627 110.627l-45.254-45.254-145.373 145.372-145.373-145.372-45.254 45.253 145.373 145.374-145.373 145.373 45.254 45.254 145.373-145.373 145.373 145.373 45.254-45.255-145.372-145.372z" /></svg>
         </div>
-      </button>
+      </div>
     </transition>
   </div>
 </template>
@@ -321,10 +321,14 @@ export default {
       // animate logo start (mask)
       window.Snap.animate(72,0, ( value ) => {
         gl_rect.transform( `t${value},t${value}`);
-      }, 3000, () => { this.showNoCookie = false } );   
-      this.inactiveTimer = setInterval(() => {
-        this.animateInactive ()
-      }, 8000)
+      }, 3000, () => {
+        setTimeout(() => {
+          this.showNoCookie = false
+        }, 4000);
+        this.inactiveTimer = setInterval(() => {
+          this.animateInactive ()
+        }, 8000)
+      } );   
     }, 3000);
 
   },

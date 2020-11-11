@@ -340,6 +340,7 @@ a {
     line-height: 42px;
     background-color: $pink;
     color: #000;
+    text-align: center;
   }
   &__close {
     background-color: #000;
@@ -378,47 +379,56 @@ a {
   }
 }
 
-.c-loader {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &__wrapper {
-    font-size: 12px;
-    position: relative;
-    font-family: Monospace;
-    white-space: pre;
-    font-weight: bold;
-    overflow: hidden;
-    div {
-      position: relative;
-      background-color: white;
-      &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: $pink;
-        mix-blend-mode: lighten;
-        transform: translateX(-100%);
-        animation: loader 4s infinite;
-      }
-    }
-  }
-}
+// .c-loader {
+//   width: 100%;
+//   height: 100vh;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   &__wrapper {
+//     font-size: 12px;
+//     position: relative;
+//     line-height: 0.7;
+//     font-family: Monospace;
+//     white-space: pre;
+//     font-weight: bold;
+//     overflow: hidden;
+//     div {
+//       position: relative;
+//       background-color: white;
+//       &::before {
+//         content: "";
+//         position: absolute;
+//         top: 0;
+//         left: 0;
+//         width: 100%;
+//         height: 100%;
+//         background-color: $pink;
+//         mix-blend-mode: lighten;
+//         transform: translateX(-100%);
+//         animation: loader 4s infinite;
+//       }
+//     }
+//   }
+// }
 
-@keyframes loader {
-  100% {
-    transform: translateX(0);
-  }
-}
+// @keyframes loader {
+//   100% {
+//     transform: translateX(0);
+//   }
+// }
 
 .c-no-cookie {
+  max-width: none;
+  width: auto;
   header {
     padding-bottom: 3em;
+    font-weight: normal;
+    span {
+      position: static;
+      margin-left: 1em;
+      font-weight: bold;
+    }
   }
 }
 
@@ -567,7 +577,7 @@ a {
 
 .no-cookie-enter-active,
 .no-cookie-leave-active {
-  transition: transform 0.5s 2s $easingBounce;
+  transition: transform 0.5s $easingBounce;
 }
 
 .no-cookie-enter,
